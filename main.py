@@ -18,7 +18,7 @@ class mainMenu:
         self.itemsdb = sql.connect("data/items.db")
         self.itemscur = self.itemsdb.cursor()
 
-        for row in self.itemscur.execute("SELECT * FROM weapons ORDER BY namme"):
+        for row in self.itemscur.execute("SELECT * FROM weapons ORDER BY name"):
             self.weaponsTable.append(list(row))
 
     def createMainLayout(self):
