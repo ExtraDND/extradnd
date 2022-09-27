@@ -10,8 +10,13 @@ def run(window):
 
 class mainMenu:
     def __init__(self, name):
-        self.window = sg.Window(name, self.createMainLayout(), finalize=True, resizable=True, margins=(0,0))
         self.initItemsDB()
+        self.window = sg.Window(title=name, 
+                                layout=self.createMainLayout(), 
+                                finalize=True, 
+                                resizable=True, 
+                                margins=(0,0))
+        print(self.weaponsTable)
 
     def initItemsDB(self):
         self.weaponsTable = []
@@ -64,7 +69,19 @@ items, feats, classes, subclasses and so much more!'''
         return [[content_tabs]]
 
     def createItemsLayout(self):
-        return [[sg.T("Items coming soon..")]]
+        weapons_tab = [
+            [
+                sg.Table(self.weaponsTable,
+                        headings=['Name','Cost','Damage','Ranged','Type','Magic','Max Range','Min Range'],
+                        key='-WEAPONS_TABLE-')
+            ]
+        ]
+        items_tabs = sg.TabGroup(
+            layout=[[
+                sg.Tab("Weapons", weapons_tab)
+            ]]
+        )
+        return [[items_tabs]]
     def createSpellsLayout(self):
         return [[sg.T("Spells coming soon..")]]
     def createMonstersLayout(self):
