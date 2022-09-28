@@ -2,31 +2,45 @@ import sqlite3 as sql
 import PySimpleGUI as sg
 
 def run(window):
+    '''
+    Main run function, has event loop and most user input
+    '''
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
             break
 
 
-class mainMenu:
+class MainWindow:
+    '''
+    Class for the main window
+    '''
     def __init__(self, name):
-        self.initItemsDB()
+        '''
+        Init function for MainWindow class
+        '''
+        self.initItemsDB() # Get all items from items.db and append to their respective arrays
         self.window = sg.Window(title=name, 
-                                layout=self.createMainLayout(), 
+                                layout=self.createMainLayout(), # createMainLayout returns an array
                                 finalize=True, 
                                 resizable=True, 
-                                margins=(0,0))
-        print(self.weaponsTable)
+                                margins=(0,0)) # Create the main window that the user can interact with
 
     def initItemsDB(self):
+        '''
+        Iterates through items.db database and adds fields to an array so they can be used in Table widgets
+        '''
         self.weaponsTable = []
-        self.itemsdb = sql.connect("data/items.db")
-        self.itemscur = self.itemsdb.cursor()
+        self.itemsdb = sql.connect("data/items.db") # Connect to items.db
+        self.itemscur = self.itemsdb.cursor() # Create cursor
 
-        for row in self.itemscur.execute("SELECT * FROM weapons ORDER BY name"):
+        for row in self.itemscur.execute("SELECT * FROM weapons ORDER BY name"): # Select all the weapons and sort by asc alphabetical
             self.weaponsTable.append(list(row))
 
     def createMainLayout(self):
+        '''
+        Creates the main, overall layout of the program
+        '''
         main_tabs = sg.TabGroup(
             layout=[[
                 sg.Tab("Characters", self.createCharactersLayout()),
@@ -36,7 +50,7 @@ class mainMenu:
             tab_location="topright"
         )
         mainLayout = [[main_tabs]]
-        return mainLayout
+        return mainLayout # Return layout
 
     def createCharactersLayout(self):
         return [[sg.T("Characters")]]
@@ -108,7 +122,6 @@ items, feats, classes, subclasses and so much more!'''
         return [[sg.T("Invocations coming soon..")]]
 
 if __name__ == "__main__":
-    main_menu = mainMenu("Test")
-    window = main_menu.window
-    run(window)
-    window.close()
+    window = MainWindow("Test")
+    run(window.window)
+    window.window.close()
