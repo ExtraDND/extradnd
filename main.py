@@ -58,15 +58,13 @@ Features: {self.features}
     def _JSONToClass(class_file: str) -> dict:
         with open(class_file, "r") as json_f:
             data = json.load(json_f)
-            json_f.close()
-            return data
+            return role(data)
 
     @staticmethod
     def _ClassToJSON(data: dict) -> str:
         with open("data/classes/"+role.__JSONfileName(data["name"]), "w+") as json_f:
             json_data = json.dumps(data)
             json_f.write(json.dumps(data))
-            json_f.close()
             return json_data
 
 classes = []
