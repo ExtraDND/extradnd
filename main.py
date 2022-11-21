@@ -45,7 +45,7 @@ Features: {self.features}
         return info
 
     @staticmethod
-    def __JSONfileName(name: str) -> str:
+    def __getJSONfileName(name: str) -> str:
         new_name = ""
         for character in name:
             if character != " ":
@@ -62,7 +62,7 @@ Features: {self.features}
 
     @staticmethod
     def _ClassToJSON(data: dict) -> str:
-        with open("data/classes/"+role.__JSONfileName(data["name"]), "w+") as json_f:
+        with open("data/classes/"+role.__getJSONfileName(data["name"]), "w+") as json_f:
             json_data = json.dumps(data)
             json_f.write(json.dumps(data))
             return json_data
