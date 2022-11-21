@@ -22,7 +22,7 @@ class role:
         self.starting_equipment = information["starting_equipment"]
         self.features = information["features"]
     
-    def classInfo(self) -> str:
+    def _getClassInfo(self) -> str:
         info = f"""
 Name: {self.name} | Source: {self.source}
 ===================================================
@@ -67,8 +67,9 @@ Features: {self.features}
             json_f.write(json.dumps(data))
             return json_data
 
+    def __str__(self) -> str:
+        return self._getClassInfo()
+
 classes = []
 fighter = role._JSONToClass("data/classes/fighter.json")
-fighter2 = fighter
-fighter2["name"] = "fighter2"
-print(type(role._ClassToJSON(fighter2)))
+print(fighter)
