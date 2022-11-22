@@ -1,7 +1,9 @@
 import json
+from PySide6.QtWidgets import QWidget
 
-class role:
+class Role(QWidget):
     def __init__(self, information: dict) -> None:
+        super(Role, self).__init__()
         self.name = information["name"]
         self.source = information["source"]
         self.description = information["description"]
@@ -54,11 +56,11 @@ Features: {self.features}
     def _JSONToClass(class_file: str) -> dict:
         with open(class_file, "r") as json_f:
             data = json.load(json_f)
-            return role(data)
+            return Role(data)
 
     @staticmethod
     def _ClassToJSON(data: dict) -> str:
-        with open("data/classes/"+role.__getJSONfileName(data["name"]), "w+") as json_f:
+        with open("data/classes/"+Role.__getJSONfileName(data["name"]), "w+") as json_f:
             json_data = json.dumps(data)
             json_f.write(json.dumps(data))
             return json_data
