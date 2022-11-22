@@ -7,7 +7,7 @@ from PySide6.QtGui import QAction, QIcon, QPalette, QColor
 from PySide6.QtWidgets import ( 
     QApplication, QMainWindow, QWidget,
     QTabWidget, QToolBar, QStatusBar,
-    QLabel
+    QLabel, QVBoxLayout, QBoxLayout
 )
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
@@ -23,6 +23,24 @@ class Color(QWidget):
         self.setPalette(palette)
 logging.info("Initialised Colors")
 # class Frame(QWidget)
+
+class ClassWidget(QWidget):
+    def __init__(self):
+        super(ClassWidget, self).__init__()
+        lay = QBoxLayout()
+
+class ClassesWidget(QWidget):
+    def __init__(self):
+        super(ClassesWidget, self).__init__()
+        self.layout = QVBoxLayout(self)
+
+        classes = []
+        class_files = os.listdir("data/classes")
+        for f in class_files:
+            role = Role._JSONToClass(f"data/classes/{f}")
+            classes.append(role)
+        self.layout.addWidget(QLabel("Test"))
+        self.layout.addWidget(QLabel("Test2"))
 
 logging.info("Initialising Main Window")
 class MainWindow(QMainWindow):
@@ -54,17 +72,9 @@ class MainWindow(QMainWindow):
         file.addAction(export_button)
         logging.debug("Created menu bar")
 
-    def __getClasses(self) -> list:
-        classes = []
-        class_files = os.listdir("data/classes")
-        for f in class_files:
-            role = Role._JSONToClass(f"data/classes/{f}")
-            classes.append(role)
-        return classes
-
     def __classesTab(self) -> QTabWidget:
         tabs = QTabWidget()
-        tabs.addTab(self.__getClasses()[0], "Classes")
+        tabs.addTab(ClassesWidget(), "Classes")
         tabs.addTab(QWidget(), "Subclasses")
         return tabs
 
