@@ -1,7 +1,7 @@
 from PySide6 import QtCore
 from PySide6.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation
-from PySide6.QtGui import QPalette, QColor
-from PySide6.QtWidgets import QWidget, QFrame, QToolButton, QScrollArea, QSizePolicy, QVBoxLayout
+from PySide6.QtGui import QPalette, QColor, QPixmap
+from PySide6.QtWidgets import QWidget, QFrame, QToolButton, QScrollArea, QSizePolicy, QVBoxLayout, QPushButton
 
 class EHSeperator(QFrame):
     def __init__(self):
@@ -26,3 +26,37 @@ class EColor(QWidget):
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
 
+class ECollapsibleBox(QWidget):
+    def __init__(self, name, content: QWidget):
+        super(ECollapsibleBox, self).__init__()
+        self.collapseIcon = QPixmap("icons/book-open.png")
+        self.expandIcon = QPixmap("icons/book-brown.png")
+
+        self.header = QPushButton()
+        self.header.setCheckable(True)
+        self.header.setChecked(True)
+        self.header.setFlat(True)
+        self.header.clicked.connect(self.onClicked)
+        self.header.setIcon(self.collapseIcon)
+        self.header.setText(name)
+        self.header.setStyleSheet("QPushButton {font-weight: bold; text-align: left;}")
+        self.headerSize = self.header.sizeHint()
+
+        self.content = content
+        self.contentSize = self.content.sizeHint()
+
+        lay = QVBoxLayout(self)
+
+        lay.addWidget(EHSeperator())
+        lay.addWidget(self.header)
+        lay.addWidget(self.content)
+        self.content.setVisible(True)
+        lay.addWidget(EHSeperator())
+
+        self.setLayout(lay)
+    
+    def onClicked(self):
+        visible = self.content.isVisible()
+        self.content.setVisible(not visible)
+        self.header.setIcon(self.expandIcon) if visible else self.header.setIcon(self.collapseIcon)
+        self.setMinimumSize(self.headerSize) if visible else self.setMinimumSize(self.headerSize + self.contentSize)
