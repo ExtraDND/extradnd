@@ -7,38 +7,13 @@ from PySide6.QtWidgets import (
     QScrollArea, QSizePolicy, QVBoxLayout,
     QMainWindow, QApplication
 )
-from EUtils import EHSeperator
-
-
-class CollapsibleBox(QWidget):
-    def __init__(self, name, content):
-        super(CollapsibleBox, self).__init__()
-        self.header = QLabel(name)
-        collapseIcon = QPixmap(":teRightArrow.png")
-        expandIcon = QPixmap(":teDownArrow.png")
-
-        headerFont = QFont()
-        headerFont.setBold(True)
-        headerFont.setCapitalization(QFont.Capitalization.Capitalize)
-        self.header.setFont(headerFont)
-        self.header.setPixmap(expandIcon)
-
-        lay = QVBoxLayout(self)
-
-        lay.addWidget(EHSeperator())
-        lay.addWidget(self.header)
-        lay.addWidget(content)
-        lay.addWidget(EHSeperator())
-
-        self.setLayout(lay)
-
-
+from EUtils import EHSeperator, ECollapsibleBox
 
 class Example(QWidget):
 
     def __init__(self):
         super(Example, self).__init__()
-        collapse = CollapsibleBox("Collapse", QLabel("Content"))
+        collapse = ECollapsibleBox("Fighter", QLabel("Content"))
 
         verticalLayout = QVBoxLayout(self)
         verticalLayout.addWidget(QLabel("Test 1"))
