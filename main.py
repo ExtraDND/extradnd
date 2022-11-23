@@ -12,17 +12,15 @@ from PySide6.QtWidgets import (
     QLabel, QVBoxLayout, QBoxLayout
 )
 
-logging.basicConfig(filename="latest.log",format='%(levelname)s:%(message)s', level=logging.DEBUG)
+logging.basicConfig(filename="latest.log",format='%(asctime)s - %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
 
-logging.info("Initialising Main Window")
 class MainWindow(QMainWindow):
     def __init__(self):
+        logging.info("MainWindow init START")
         super(MainWindow, self).__init__()
 
         self.setWindowTitle("ExtraDND")
-        logging.debug("Set window title")
         self.setMinimumSize(QSize(604,200))
-        logging.debug("Set window size")
 
         tabs = QTabWidget()
         tabs.addTab(self._characterTab(), "Characters")
@@ -30,19 +28,18 @@ class MainWindow(QMainWindow):
         tabs.addTab(self._informationTab(), "Information")
 
         self.setCentralWidget(tabs)
-        logging.debug("Created main tab group")
 
         import_button = QAction(QIcon("icons/arrow.png"), "&Import", self)
         import_button.setStatusTip("Import custom content and characters!")
         export_button = QAction(QIcon("icons/arrow-180.png"), "&Export", self)
         export_button.setStatusTip("Export custom content and characters!")
-        logging.debug("Created menu actions")
 
         menu = self.menuBar()
         file = menu.addMenu("&File")
         file.addAction(import_button)
         file.addAction(export_button)
-        logging.debug("Created menu bar")
+
+        logging.info("MainWindow init FINISH")
 
     def _characterTab(self) -> QWidget:
         return QWidget()
