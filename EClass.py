@@ -1,6 +1,7 @@
 import json
 import os
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTabWidget
+from EUtils import EHSeperator
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTabWidget, QHBoxLayout, QFrame
 
 class EClassesTabWidget(QTabWidget):
     def __init__(self):
@@ -12,12 +13,13 @@ class EClassesWidget(QWidget):
     def __init__(self):
         super(EClassesWidget, self).__init__()
         self.layout = QVBoxLayout(self)
+        self.layout.addWidget(EHSeperator())
 
-        classes = []
         class_files = os.listdir("data/classes")
         for f in class_files:
             role = EClassWidget._JSONToClass(f"data/classes/{f}")
-            classes.append(role)
+            self.layout.addWidget(role)
+            self.layout.addWidget(EHSeperator())
         self.layout.addWidget(QLabel("Test"))
         self.layout.addWidget(QLabel("Test2"))
 
@@ -39,6 +41,17 @@ class EClassWidget(QWidget):
         self.modifiers = information["modifiers"]
         self.starting_equipment = information["starting_equipment"]
         self.features = information["features"]
+
+        lay = QVBoxLayout(self)
+        line1 = QHBoxLayout()
+        line1.addWidget(QLabel(f"Name: {self.name}"))
+        line1.addWidget(QLabel(f"Source: {self.source}"))
+        lay.addLayout(line1)
+        lay.addWidget(EHSeperator())
+        line2 = QHBoxLayout()
+        line2.addWidget(QLabel(f"Hit Die: d{self.hit_die}"))
+        lay.addLayout(line2)
+        lay.addWidget(EHSeperator())
     
     def _getClassInfo(self) -> str:
         info = f"""
