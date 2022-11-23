@@ -1,6 +1,12 @@
 import json
 import os
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTabWidget
+
+class EClassesTabWidget(QTabWidget):
+    def __init__(self):
+        super(EClassesTabWidget, self).__init__()
+        self.addTab(EClassesWidget(), "Classes")
+        self.addTab(QWidget(), "Subclasses")
 
 class EClassesWidget(QWidget):
     def __init__(self):
