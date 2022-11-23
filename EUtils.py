@@ -9,6 +9,7 @@ class EHSeperator(QFrame):
         self.setObjectName("hSeperator")
         self.setFrameShape(QFrame.Shape.HLine)
         self.setFrameShadow(QFrame.Shadow.Sunken)
+        
 class EVSeperator(QFrame):
     def __init__(self):
         super(EVSeperator, self).__init__()
