@@ -1,127 +1,75 @@
-import sqlite3 as sql
-import PySimpleGUI as sg
+import logging
+import os
 
-def run(window):
-    '''
-    Main run function, has event loop and most user input
-    '''
-    while True:
-        event, values = window.read()
-        if event == sg.WIN_CLOSED:
-            break
+from EClass import EClassWidget, EClassesWidget, EClassesTabWidget
+from EUtils import EColor
+
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import ( 
+    QApplication, QMainWindow, QWidget,
+    QTabWidget, QToolBar, QStatusBar,
+    QLabel, QVBoxLayout, QBoxLayout
+)
+
+logging.basicConfig(filename="latest.log",format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
+logging.info("Initialising Main Window")
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+
+        self.setWindowTitle("ExtraDND")
+        logging.debug("Set window title")
+        self.setMinimumSize(QSize(604,200))
+        logging.debug("Set window size")
+
+        tabs = QTabWidget()
+        tabs.addTab(self._characterTab(), "Characters")
+        tabs.addTab(self._contentTab(), "Content List")
+        tabs.addTab(self._informationTab(), "Information")
+
+        self.setCentralWidget(tabs)
+        logging.debug("Created main tab group")
+
+        import_button = QAction(QIcon("icons/arrow.png"), "&Import", self)
+        import_button.setStatusTip("Import custom content and characters!")
+        export_button = QAction(QIcon("icons/arrow-180.png"), "&Export", self)
+        export_button.setStatusTip("Export custom content and characters!")
+        logging.debug("Created menu actions")
+
+        menu = self.menuBar()
+        file = menu.addMenu("&File")
+        file.addAction(import_button)
+        file.addAction(export_button)
+        logging.debug("Created menu bar")
+
+    def _characterTab(self) -> QWidget:
+        return QWidget()
+
+    def _contentTab(self) -> QTabWidget:
+        tabs = QTabWidget()
+        tabs.addTab(QWidget(), "Items")
+        tabs.addTab(QWidget(), "Spells")
+        tabs.addTab(QWidget(), "Monsters")
+        tabs.addTab(EClassesTabWidget(), "Classes")
+        tabs.addTab(QWidget(), "Races")
+        tabs.addTab(QWidget(), "Feats")
+        tabs.addTab(QWidget(), "Backgrounds")
+        tabs.addTab(QWidget(), "Languages")
+        tabs.addTab(QWidget(), "Selections")
+        logging.debug("Created content list tab group")
+        return tabs
+
+    def _informationTab(self) -> QWidget:
+        return QWidget()
 
 
-class MainWindow:
-    '''
-    Class for the main window
-    '''
-    def __init__(self, name):
-        '''
-        Init function for MainWindow class
-        '''
-        self.initItemsDB() # Get all items from items.db and append to their respective arrays
-        self.window = sg.Window(title=name, 
-                                layout=self.createMainLayout(), # createMainLayout returns an array
-                                finalize=True, 
-                                resizable=True, 
-                                margins=(0,0)) # Create the main window that the user can interact with
+app = QApplication()
 
-    def initItemsDB(self):
-        '''
-        Iterates through items.db database and adds fields to an array so they can be used in Table widgets
-        '''
-        self.weaponsTable = []
-        self.itemsdb = sql.connect("data/items.db") # Connect to items.db
-        self.itemscur = self.itemsdb.cursor() # Create cursor
+window = MainWindow()
+window.show()
+logging.info("Create Main Window instance")
+logging.info("Start execution loop")
 
-        for row in self.itemscur.execute("SELECT * FROM weapons ORDER BY name"): # Select all the weapons and sort by asc alphabetical
-            self.weaponsTable.append(list(row))
-
-    def createMainLayout(self):
-        '''
-        Creates the main, overall layout of the program
-        '''
-        main_tabs = sg.TabGroup(
-            layout=[[
-                sg.Tab("Characters", self.createCharactersLayout()),
-                sg.Tab("Content List", self.createContentLayout()),
-                sg.Tab("Information", self.createInformationLayout())
-            ]],
-            tab_location="topright"
-        )
-        mainLayout = [[main_tabs]]
-        return mainLayout # Return layout
-
-    def createCharactersLayout(self):
-        return [[sg.T("Characters")]]
-
-    def createInformationLayout(self):
-        info = '''Small program created by me (Isaac Roberts) for my A-Level Computer Science NEA. 
-It acts as a helpful tool for Dungeons and Dragons by giving players access to their  characters, 
-items and even monsters all in one place. It even has the functionality to add custom, "homebrew", 
-items, feats, classes, subclasses and so much more!'''
-        return [[sg.T(info)]]
-
-    def createContentLayout(self):
-        content_tabs = sg.TabGroup(
-            layout=[[
-                sg.Tab("Items", self.createItemsLayout()),
-                sg.Tab("Spells", self.createSpellsLayout()),
-                sg.Tab("Monsters", self.createMonstersLayout()),
-                sg.Tab("Classes", self.createClassesLayout()),
-                sg.Tab("Sub-Classes", self.createSubclassesLayout()),
-                sg.Tab("Races", self.createRacesLayout()),
-                sg.Tab("Sub-Races", self.createSubracesLayout()),
-                sg.Tab("Feats", self.createFeatsLayout()),
-                sg.Tab("Backgrounds", self.createBackgroundsLayout()),
-                sg.Tab("Languages", self.createLanguagesLayout()),
-                sg.Tab("Selections", self.createSelectionsLayout()),
-                sg.Tab("Pact Boons", self.createBoonsLayout()),
-                sg.Tab("Eldritch Invocations", self.createInvocationsLayout())
-            ]]
-        )
-        return [[content_tabs]]
-
-    def createItemsLayout(self):
-        weapons_tab = [
-            [
-                sg.Table(self.weaponsTable,
-                        headings=['Name','Cost','Damage','Ranged','Type','Magic','Max Range','Min Range'],
-                        key='-WEAPONS_TABLE-')
-            ]
-        ]
-        items_tabs = sg.TabGroup(
-            layout=[[
-                sg.Tab("Weapons", weapons_tab)
-            ]]
-        )
-        return [[items_tabs]]
-    def createSpellsLayout(self):
-        return [[sg.T("Spells coming soon..")]]
-    def createMonstersLayout(self):
-        return [[sg.T("Monsters coming soon..")]]
-    def createClassesLayout(self):
-        return [[sg.T("Classes coming soon..")]]
-    def createSubclassesLayout(self):
-        return [[sg.T("Sub-Classes coming soon..")]]
-    def createRacesLayout(self):
-        return [[sg.T("Classes coming soon..")]]
-    def createSubracesLayout(self):
-        return [[sg.T("Sub-Races coming soon..")]]
-    def createFeatsLayout(self):
-        return [[sg.T("Feats coming soon..")]]
-    def createBackgroundsLayout(self):
-        return [[sg.T("Backgrounds coming soon")]]
-    def createLanguagesLayout(self):
-        return [[sg.T("Languages coming soon..")]]
-    def createSelectionsLayout(Self):
-        return [[sg.T("Selections coming soon..")]]
-    def createBoonsLayout(self):
-        return [[sg.T("Boons coming soon..")]]
-    def createInvocationsLayout(self):
-        return [[sg.T("Invocations coming soon..")]]
-
-if __name__ == "__main__":
-    window = MainWindow("Test")
-    run(window.window)
-    window.window.close()
+app.exec()
