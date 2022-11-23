@@ -1,6 +1,7 @@
-from PySide6.QtCore import QRect
-from PySide6.QtGui import QPalette, QColor, QPixmap
-from PySide6.QtWidgets import QWidget, QFrame, QStackedLayout, QHBoxLayout, QLabel
+from PySide6 import QtCore
+from PySide6.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation
+from PySide6.QtGui import QPalette, QColor
+from PySide6.QtWidgets import QWidget, QFrame, QToolButton, QScrollArea, QSizePolicy, QVBoxLayout
 
 class EHSeperator(QFrame):
     def __init__(self):
@@ -23,24 +24,4 @@ class EColor(QWidget):
         palette = self.palette()
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
-
-class __ECollapsibleHeader(QWidget):
-    def __init__(self, name, content):
-        super(__ECollapsibleHeader, self).__init__()
-        self.content = content
-        self.expandIcon = QPixmap(":teDownArrow.png")
-        self.collapseIcon = QPixmap(":teRightArrow.png")
-
-        stack = QStackedLayout(self)
-        stack.setStackingMode(QStackedLayout.StackingMode.StackAll)
-
-        widget = QWidget()
-        lay = QHBoxLayout(widget)
-
-        self.icon = QLabel()
-        self.icon.setPixmap(self.expandIcon)
-
-class ECollapsible(QWidget):
-    def __init__(self):
-        super(ECollapsible, self).__init__()
 
