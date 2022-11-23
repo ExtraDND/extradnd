@@ -1,46 +1,18 @@
 import logging
 import os
-from role import Role
+
+from EClass import EClassWidget, EClassesWidget
+from EUtils import EColor
 
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QAction, QIcon, QPalette, QColor
+from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import ( 
     QApplication, QMainWindow, QWidget,
     QTabWidget, QToolBar, QStatusBar,
     QLabel, QVBoxLayout, QBoxLayout
 )
 
-logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
-
-logging.info("Initialising Colors")
-class Color(QWidget):
-    def __init__(self, color):
-        super(Color, self).__init__()
-        self.setAutoFillBackground(True)
-
-        palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(color))
-        self.setPalette(palette)
-logging.info("Initialised Colors")
-# class Frame(QWidget)
-
-class ClassWidget(QWidget):
-    def __init__(self):
-        super(ClassWidget, self).__init__()
-        lay = QBoxLayout()
-
-class ClassesWidget(QWidget):
-    def __init__(self):
-        super(ClassesWidget, self).__init__()
-        self.layout = QVBoxLayout(self)
-
-        classes = []
-        class_files = os.listdir("data/classes")
-        for f in class_files:
-            role = Role._JSONToClass(f"data/classes/{f}")
-            classes.append(role)
-        self.layout.addWidget(QLabel("Test"))
-        self.layout.addWidget(QLabel("Test2"))
+logging.basicConfig(filename="latest.log",format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
 logging.info("Initialising Main Window")
 class MainWindow(QMainWindow):
@@ -74,7 +46,7 @@ class MainWindow(QMainWindow):
 
     def __classesTab(self) -> QTabWidget:
         tabs = QTabWidget()
-        tabs.addTab(ClassesWidget(), "Classes")
+        tabs.addTab(EClassesWidget(), "Classes")
         tabs.addTab(QWidget(), "Subclasses")
         return tabs
 
