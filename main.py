@@ -1,7 +1,7 @@
 import logging
 import os
 
-from EClass import EClassWidget, EClassesWidget
+from EClass import EClassWidget, EClassesWidget, EClassesTabWidget
 from EUtils import EColor
 
 from PySide6.QtCore import Qt, QSize
@@ -44,12 +44,6 @@ class MainWindow(QMainWindow):
         file.addAction(export_button)
         logging.debug("Created menu bar")
 
-    def __classesTab(self) -> QTabWidget:
-        tabs = QTabWidget()
-        tabs.addTab(EClassesWidget(), "Classes")
-        tabs.addTab(QWidget(), "Subclasses")
-        return tabs
-
     def _characterTab(self) -> QWidget:
         return QWidget()
 
@@ -58,7 +52,7 @@ class MainWindow(QMainWindow):
         tabs.addTab(QWidget(), "Items")
         tabs.addTab(QWidget(), "Spells")
         tabs.addTab(QWidget(), "Monsters")
-        tabs.addTab(self.__classesTab(), "Classes")
+        tabs.addTab(EClassesTabWidget(), "Classes")
         tabs.addTab(QWidget(), "Races")
         tabs.addTab(QWidget(), "Feats")
         tabs.addTab(QWidget(), "Backgrounds")
