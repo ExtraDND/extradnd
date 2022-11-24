@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
     QLabel, QVBoxLayout, QBoxLayout
 )
 
-logging.basicConfig(filename="latest.log",format='%(asctime)s - %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename="logging.log",format='%(asctime)s - %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class MainWindow(QMainWindow):
     def __init__(self):
