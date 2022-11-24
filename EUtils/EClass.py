@@ -4,7 +4,7 @@ from .EWidgets import EHSeperator, ECollapsibleBox
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, 
     QTabWidget, QHBoxLayout, QFrame, 
-    QScrollArea, QPushButton
+    QScrollArea, QPushButton, QMainWindow
 )
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QPixmap
@@ -19,6 +19,8 @@ class EClassesTabWidget(QTabWidget):
 class EClassesWidget(QWidget):
     def __init__(self):
         super(EClassesWidget, self).__init__()
+
+        self.classWindow = None
 
         self.classScroll = QScrollArea()
         self.classScrollLayout = QVBoxLayout()
@@ -38,6 +40,7 @@ class EClassesWidget(QWidget):
         newClass = QPushButton()
         newClass.setIcon(newClassIco)
         newClass.setFixedSize(newClassIco.size() + QSize(8,8))
+        newClass.clicked.connect(self.openClassCreator)
         classButtons.addWidget(newClass)
 
         delClassIco = QPixmap("icons/book--minus.png")
@@ -61,7 +64,10 @@ class EClassesWidget(QWidget):
         lay.addWidget(self.classScroll)
         self.setLayout(lay)
 
-    def openClassCreator(self):
+    def openClassCreator(self, checked):
+        print(self.classWindow)
+        if self.classWindow == None: self.classWindow = EClassCreatorWindow()
+        self.classWindow.show()
         
 
     def _startClassList(self):
@@ -187,6 +193,16 @@ Features: {self.features}
         return self._getClassInfo()
 
 
-class EClassCreatorWindow(QWidget):
+class EClassCreatorWindow(QMainWindow):
     def __init__(self) -> None:
-        self.show()
+        super(EClassCreatorWindow, self).__init__()
+        self.setWindowTitle("Class Creator")
+        winIcon = QPixmap("icons/book--plus.png")
+        self.setWindowIcon(winIcon)
+
+        lay = QVBoxLayout()
+        lay.addWidget(QLabel("Test1"))
+        lay.addWidget(QLabel("Test2"))
+        widget = QWidget()
+        widget.setLayout(lay)
+        self.setCentralWidget(widget)
