@@ -27,14 +27,14 @@ class EColor(QWidget):
         self.setPalette(palette)
 
 class ECollapsibleBox(QWidget):
-    def __init__(self, name, content: QWidget):
+    def __init__(self, name: str, content: QWidget, flat: bool=True):
         super(ECollapsibleBox, self).__init__()
         self.collapseIcon = QPixmap("icons/book-open.png")
         self.expandIcon = QPixmap("icons/book-brown.png")
 
         self.header = QPushButton()
         self.header.setCheckable(True)
-        self.header.setFlat(True)
+        self.header.setFlat(flat)
         self.header.clicked.connect(self.onClicked)
         self.header.setIcon(self.expandIcon)
         self.header.setText(name)
