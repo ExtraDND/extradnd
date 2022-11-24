@@ -1,7 +1,8 @@
 import json
 import os
 from EUtils import EHSeperator, ECollapsibleBox
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTabWidget, QHBoxLayout, QFrame, QScrollArea
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTabWidget, QHBoxLayout, QFrame, QScrollArea, QScrollBar
+from PySide6.QtCore import Qt
 
 class EClassesTabWidget(QTabWidget):
     def __init__(self):
@@ -13,6 +14,9 @@ class EClassesWidget(QScrollArea):
     def __init__(self):
         super(EClassesWidget, self).__init__()
         self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.setWidgetResizable(True)
 
         class_files = os.listdir("data/classes")
         for f in class_files:
@@ -20,7 +24,9 @@ class EClassesWidget(QScrollArea):
             self.layout.addWidget(ECollapsibleBox(role.name, role))
         self.layout.addWidget(QLabel("Test"))
         self.layout.addWidget(QLabel("Test2"))
-        self.setLayout(self.layout)
+        widget = QWidget()
+        widget.setLayout(self.layout)
+        self.setWidget(widget)
 
 class EClassWidget(QWidget):
     def __init__(self, information: dict) -> None:
