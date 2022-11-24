@@ -1,6 +1,7 @@
-from PySide6.QtCore import QRect
+from PySide6 import QtCore
+from PySide6.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation
 from PySide6.QtGui import QPalette, QColor, QPixmap
-from PySide6.QtWidgets import QWidget, QFrame, QStackedLayout, QHBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QFrame, QToolButton, QScrollArea, QSizePolicy, QVBoxLayout, QPushButton
 
 class EHSeperator(QFrame):
     def __init__(self):
@@ -8,6 +9,7 @@ class EHSeperator(QFrame):
         self.setObjectName("hSeperator")
         self.setFrameShape(QFrame.Shape.HLine)
         self.setFrameShadow(QFrame.Shadow.Sunken)
+        
 class EVSeperator(QFrame):
     def __init__(self):
         super(EVSeperator, self).__init__()
@@ -24,23 +26,34 @@ class EColor(QWidget):
         palette.setColor(QPalette.Window, QColor(color))
         self.setPalette(palette)
 
-class __ECollapsibleHeader(QWidget):
-    def __init__(self, name, content):
-        super(__ECollapsibleHeader, self).__init__()
+class ECollapsibleBox(QWidget):
+    def __init__(self, name, content: QWidget):
+        super(ECollapsibleBox, self).__init__()
+        self.collapseIcon = QPixmap("icons/book-open.png")
+        self.expandIcon = QPixmap("icons/book-brown.png")
+
+        self.header = QPushButton()
+        self.header.setCheckable(True)
+        self.header.setChecked(True)
+        self.header.setFlat(True)
+        self.header.clicked.connect(self.onClicked)
+        self.header.setIcon(self.collapseIcon)
+        self.header.setText(name)
+        self.header.setStyleSheet("QPushButton {font-weight: bold; text-align: left;}")
+        self.headerSize = self.header.sizeHint()
+
         self.content = content
-        self.expandIcon = QPixmap(":teDownArrow.png")
-        self.collapseIcon = QPixmap(":teRightArrow.png")
+        self.contentSize = self.content.sizeHint()
 
-        stack = QStackedLayout(self)
-        stack.setStackingMode(QStackedLayout.StackingMode.StackAll)
+        lay = QVBoxLayout(self)
 
-        widget = QWidget()
-        lay = QHBoxLayout(widget)
+        lay.addWidget(self.header)
+        lay.addWidget(self.content)
+        self.content.setVisible(True)
 
-        self.icon = QLabel()
-        self.icon.setPixmap(self.expandIcon)
-
-class ECollapsible(QWidget):
-    def __init__(self):
-        super(ECollapsible, self).__init__()
-
+        self.setLayout(lay)
+    
+    def onClicked(self):
+        visible = self.content.isVisible()
+        self.content.setVisible(not visible)
+        self.header.setIcon(self.expandIcon) if visible else self.header.setIcon(self.collapseIcon)

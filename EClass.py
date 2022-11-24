@@ -1,7 +1,8 @@
 import json
 import os
-from EUtils import EHSeperator
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTabWidget, QHBoxLayout, QFrame
+from EUtils import EHSeperator, ECollapsibleBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTabWidget, QHBoxLayout, QFrame, QScrollArea, QScrollBar
+from PySide6.QtCore import Qt
 
 class EClassesTabWidget(QTabWidget):
     def __init__(self):
@@ -9,19 +10,23 @@ class EClassesTabWidget(QTabWidget):
         self.addTab(EClassesWidget(), "Classes")
         self.addTab(QWidget(), "Subclasses")
 
-class EClassesWidget(QWidget):
+class EClassesWidget(QScrollArea):
     def __init__(self):
         super(EClassesWidget, self).__init__()
-        self.layout = QVBoxLayout(self)
-        self.layout.addWidget(EHSeperator())
+        self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.setWidgetResizable(True)
 
         class_files = os.listdir("data/classes")
         for f in class_files:
             role = EClassWidget._JSONToClass(f"data/classes/{f}")
-            self.layout.addWidget(role)
-            self.layout.addWidget(EHSeperator())
+            self.layout.addWidget(ECollapsibleBox(role.name, role))
         self.layout.addWidget(QLabel("Test"))
         self.layout.addWidget(QLabel("Test2"))
+        widget = QWidget()
+        widget.setLayout(self.layout)
+        self.setWidget(widget)
 
 class EClassWidget(QWidget):
     def __init__(self, information: dict) -> None:
@@ -86,7 +91,7 @@ Features: {self.features}
         return new_name.lower() + ".json"
 
     @staticmethod
-    def _JSONToClass(class_file: str) -> dict:
+    def _JSONToClass(class_file: str):
         with open(class_file, "r") as json_f:
             data = json.load(json_f)
             return EClassWidget(data)
