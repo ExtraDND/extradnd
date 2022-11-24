@@ -47,11 +47,9 @@ class ECollapsibleBox(QWidget):
 
         lay = QVBoxLayout(self)
 
-        lay.addWidget(EHSeperator())
         lay.addWidget(self.header)
         lay.addWidget(self.content)
         self.content.setVisible(True)
-        lay.addWidget(EHSeperator())
 
         self.setLayout(lay)
     
@@ -59,4 +57,3 @@ class ECollapsibleBox(QWidget):
         visible = self.content.isVisible()
         self.content.setVisible(not visible)
         self.header.setIcon(self.expandIcon) if visible else self.header.setIcon(self.collapseIcon)
-        self.setMinimumSize(self.headerSize) if visible else self.setMinimumSize(self.headerSize + self.contentSize)
