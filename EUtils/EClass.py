@@ -1,13 +1,14 @@
 import json
 import os
-from .EWidgets import EHSeperator, ECollapsibleBox
+from .EWidgets import EHSeperator, ECollapsibleBox, EVSeperator
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, 
     QTabWidget, QHBoxLayout, QFrame, 
-    QScrollArea, QPushButton, QMainWindow
+    QScrollArea, QPushButton, QMainWindow,
+    QLineEdit, QPlainTextEdit
 )
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt, QSize, QKeyCombination
+from PySide6.QtGui import QPixmap, QFont
 
 class EClassesTabWidget(QTabWidget):
     def __init__(self):
@@ -65,7 +66,6 @@ class EClassesWidget(QWidget):
         self.setLayout(lay)
 
     def openClassCreator(self, checked):
-        print(self.classWindow)
         if self.classWindow == None: self.classWindow = EClassCreatorWindow()
         self.classWindow.show()
         
@@ -200,9 +200,50 @@ class EClassCreatorWindow(QMainWindow):
         winIcon = QPixmap("icons/book--plus.png")
         self.setWindowIcon(winIcon)
 
-        lay = QVBoxLayout()
-        lay.addWidget(QLabel("Test1"))
-        lay.addWidget(QLabel("Test2"))
+        lay = QHBoxLayout()
+        editor = QVBoxLayout()
+        previewLay = QHBoxLayout()
+        self.preview = QWidget()
+        self.preview.setLayout(previewLay)
+        lay.setAlignment(Qt.AlignmentFlag.AlignTop)
+        lay.addLayout(editor)
+        lay.addWidget(self.preview)
+        previewLay.addWidget(EVSeperator())
+        previewLay.addWidget(QLabel("Preview"))
+        self.preview.setVisible(False)
+
+        line1 = QHBoxLayout()
+        self.name = QLineEdit()
+        self.name.setPlaceholderText("Class Name *")
+        self.source = QLineEdit()
+        self.source.setPlaceholderText("Source Name *")
+        line1.addWidget(self.name)
+        line1.addWidget(self.source)
+
+        line2 = QHBoxLayout()
+        self.description = QPlainTextEdit()
+        self.description.setPlaceholderText("Description...")
+        # h = 3 * self.description.font()
+        # self.description.setFixedHeight()
+        line2.addWidget(self.description)
+
+        editor.addLayout(line1)
+        editor.addLayout(line2)
+        
+        self.previewTrue = QPixmap("icons/book-open.png")
+        self.previewFalse = QPixmap("icons/book-brown.png")
+        self.previewButton = QPushButton()
+        self.previewButton.setCheckable(True)
+        self.previewButton.clicked.connect(self.togglePreview)
+        self.previewButton.setText("Preview")
+        self.previewButton.setIcon(self.previewFalse)
+        editor.addWidget(self.previewButton)
+
         widget = QWidget()
         widget.setLayout(lay)
         self.setCentralWidget(widget)
+
+    def togglePreview(self):
+        vis = self.preview.isVisible()
+        self.preview.setVisible(not vis)
+        self.previewButton.setIcon(self.previewFalse) if vis is True else self.previewButton.setIcon(self.previewTrue)
