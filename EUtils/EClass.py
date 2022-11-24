@@ -15,6 +15,7 @@ class EClassesTabWidget(QTabWidget):
         self.addTab(EClassesWidget(), "Classes")
         self.addTab(QWidget(), "Subclasses")
 
+
 class EClassesWidget(QWidget):
     def __init__(self):
         super(EClassesWidget, self).__init__()
@@ -22,7 +23,7 @@ class EClassesWidget(QWidget):
         self.classScroll = QScrollArea()
         self.classScrollLayout = QVBoxLayout()
         lay = QVBoxLayout()
-        lay.setContentsMargins(0,0,0,0)
+        lay.setContentsMargins(0,4,0,0)
 
         self.classScrollLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.classScroll.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
@@ -31,6 +32,7 @@ class EClassesWidget(QWidget):
 
         classButtons = QHBoxLayout()
         classButtons.setAlignment(Qt.AlignmentFlag.AlignRight)
+        classButtons.setContentsMargins(0,0,4,0)
 
         newClassIco = QPixmap("icons/book--plus.png")
         newClass = QPushButton()
@@ -38,22 +40,36 @@ class EClassesWidget(QWidget):
         newClass.setFixedSize(newClassIco.size() + QSize(8,8))
         classButtons.addWidget(newClass)
 
+        delClassIco = QPixmap("icons/book--minus.png")
+        delClass = QPushButton()
+        delClass.setIcon(delClassIco)
+        delClass.setFixedSize(delClassIco.size() + QSize(8,8))
+        classButtons.addWidget(delClass)
+
         editClassIco = QPixmap("icons/book--pencil.png")
         editClass = QPushButton()
         editClass.setIcon(editClassIco)
         editClass.setFixedSize(editClassIco.size() + QSize(8,8))
         classButtons.addWidget(editClass)
 
-        class_files = os.listdir("data/classes")
-        for f in class_files:
-            role = EClassWidget._JSONToClass(f"data/classes/{f}")
-            self.classScrollLayout.addWidget(ECollapsibleBox(role.name, role, False))
+        self._startClassList()
+        
         widget = QWidget()
         widget.setLayout(self.classScrollLayout)
         self.classScroll.setWidget(widget)
         lay.addLayout(classButtons)
         lay.addWidget(self.classScroll)
         self.setLayout(lay)
+
+    def openClassCreator(self):
+        
+
+    def _startClassList(self):
+        class_files = os.listdir("data/classes")
+        for f in class_files:
+            role = EClassWidget._JSONToClass(f"data/classes/{f}")
+            self.classScrollLayout.addWidget(ECollapsibleBox(role.name, role, False))
+
 
 class EClassWidget(QWidget):
     def __init__(self, information: dict) -> None:
@@ -62,24 +78,30 @@ class EClassWidget(QWidget):
         line1 = QHBoxLayout()
         line2 = QVBoxLayout()
         line3 = QHBoxLayout()
+        line4 = QHBoxLayout()
+        line5 = QHBoxLayout()
         self.name = information["name"]
-        line1.addWidget(QLabel(f"Name: {self.name}"))
         self.source = information["source"]
+        line1.addWidget(QLabel(f"Name: {self.name}"))
         line1.addWidget(QLabel(f"Source: {self.source}"))
         self.description = information["description"]
-        line2.addWidget(QLabel("Description:"))
         desc = QLabel(self.description)
-        desc.setWordWrap(True) 
+        desc.setWordWrap(True)
+        line2.addWidget(QLabel("Description:"))
         line2.addWidget(desc)
         self.hit_die = information["hit_die"]
-        line3.addWidget(QLabel(f"Hit Die: d{self.hit_die}"))
         self.saving_throws = information["saving_throws"]
+        line3.addWidget(QLabel(f"Hit Die: d{self.hit_die}"))
         line3.addWidget(QLabel(f"Saving Throws: {self.__getSavingThrowStr(self.saving_throws)}"))
         self.subclass = information["subclass"]
         self.subclass_level = information["subclass_level"]
+        line4.addWidget(QLabel(f"Subclass: {self.__convertName(self.subclass)}"))
+        line4.addWidget(QLabel(f"Subclass Level: {self.subclass_level}"))
         self.spellcasting = information["spellcasting"]
         self.skill_proficiency = information["skill_proficiency"]
         self.skill_proficiency_choices = information["skill_proficiency_choices"]
+        line5.addWidget(QLabel(f"{self.skill_proficiency}"))
+        line5.addWidget(QLabel(f"{self.skill_proficiency_choices}"))
         self.skill_expertise = information["skill_expertise"]
         self.skill_expertise_choices = information["skill_expertise_choices"]
         self.modifiers = information["modifiers"]
@@ -92,6 +114,9 @@ class EClassWidget(QWidget):
         lay.addWidget(EHSeperator())
         lay.addLayout(line3)
         lay.addWidget(EHSeperator())
+        lay.addLayout(line4)
+        lay.addWidget(EHSeperator())
+        lay.addLayout(line5)
     
     def _getClassInfo(self) -> str:
         info = f"""
@@ -114,6 +139,14 @@ Starting Equipment: {self.starting_equipment}
 Features: {self.features}
 """
         return info
+
+    @staticmethod
+    def __convertName(name: str) -> str:
+        result = ""
+        nameSpl = name.split("_")
+        for word in nameSpl:
+            result += f"{word.capitalize()} "
+        return result
 
     @staticmethod
     def __getSavingThrowStr(svTrs: list[str]) -> str:
@@ -152,3 +185,8 @@ Features: {self.features}
 
     def __str__(self) -> str:
         return self._getClassInfo()
+
+
+class EClassCreatorWindow(QWidget):
+    def __init__(self) -> None:
+        self.show()
