@@ -1,8 +1,8 @@
 import logging
 import os
 
-from EClass import EClassWidget, EClassesWidget, EClassesTabWidget
-from EUtils import EColor
+from EUtils.EClass import EClassWidget, EClassesWidget, EClassesTabWidget
+from EUtils.EWidgets import EColor
 
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction, QIcon
