@@ -34,10 +34,9 @@ class ECollapsibleBox(QWidget):
 
         self.header = QPushButton()
         self.header.setCheckable(True)
-        self.header.setChecked(True)
         self.header.setFlat(True)
         self.header.clicked.connect(self.onClicked)
-        self.header.setIcon(self.collapseIcon)
+        self.header.setIcon(self.expandIcon)
         self.header.setText(name)
         self.header.setStyleSheet("QPushButton {font-weight: bold; text-align: left;}")
         self.headerSize = self.header.sizeHint()
@@ -49,7 +48,7 @@ class ECollapsibleBox(QWidget):
 
         lay.addWidget(self.header)
         lay.addWidget(self.content)
-        self.content.setVisible(True)
+        self.content.setVisible(False)
 
         self.setLayout(lay)
     
