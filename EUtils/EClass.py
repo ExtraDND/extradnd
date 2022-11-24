@@ -1,6 +1,6 @@
 import json
 import os
-from EUtils import EHSeperator, ECollapsibleBox
+from .EWidgets import EHSeperator, ECollapsibleBox
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTabWidget, QHBoxLayout, QFrame, QScrollArea, QScrollBar
 from PySide6.QtCore import Qt
 
