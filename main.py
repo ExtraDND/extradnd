@@ -20,7 +20,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
 
         self.setWindowTitle("ExtraDND")
-        self.setMinimumSize(QSize(604,200))
+        self.setMinimumSize(QSize(650,325))
 
         tabs = QTabWidget()
         tabs.addTab(self._characterTab(), "Characters")
