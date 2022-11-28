@@ -4,21 +4,21 @@ from PySide6.QtGui import QPalette, QColor, QPixmap
 from PySide6.QtWidgets import QWidget, QFrame, QToolButton, QScrollArea, QSizePolicy, QVBoxLayout, QPushButton
 
 class EHSeperator(QFrame):
-    def __init__(self):
+    def __init__(self) -> None:
         super(EHSeperator, self).__init__()
         self.setObjectName("hSeperator")
         self.setFrameShape(QFrame.Shape.HLine)
         self.setFrameShadow(QFrame.Shadow.Sunken)
         
 class EVSeperator(QFrame):
-    def __init__(self):
+    def __init__(self) -> None:
         super(EVSeperator, self).__init__()
         self.setObjectName("vSeperator")
         self.setFrameShape(QFrame.Shape.VLine)
         self.setFrameShadow(QFrame.Shadow.Sunken)
 
 class EColor(QWidget):
-    def __init__(self, color):
+    def __init__(self, color: str) -> None:
         super(EColor, self).__init__()
         self.setAutoFillBackground(True)
 
@@ -27,7 +27,7 @@ class EColor(QWidget):
         self.setPalette(palette)
 
 class ECollapsibleBox(QWidget):
-    def __init__(self, name: str, content: QWidget, flat: bool=True):
+    def __init__(self, name: str, content: QWidget, flat: bool=True) -> None:
         super(ECollapsibleBox, self).__init__()
         self.collapseIcon = QPixmap("icons/book-open.png")
         self.expandIcon = QPixmap("icons/book-brown.png")
@@ -52,7 +52,7 @@ class ECollapsibleBox(QWidget):
 
         self.setLayout(lay)
     
-    def onClicked(self):
+    def onClicked(self) -> None:
         visible = self.content.isVisible()
         self.content.setVisible(not visible)
         self.header.setIcon(self.expandIcon) if visible else self.header.setIcon(self.collapseIcon)
