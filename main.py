@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 logging.basicConfig(filename="logging.log",format='%(asctime)s - %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self) -> None:
         logging.info("MainWindow init START")
         super(MainWindow, self).__init__()
 
