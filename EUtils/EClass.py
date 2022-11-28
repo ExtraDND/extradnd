@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Self
 from .EWidgets import EHSeperator, ECollapsibleBox, EVSeperator
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, 
@@ -11,14 +12,14 @@ from PySide6.QtCore import Qt, QSize, QKeyCombination
 from PySide6.QtGui import QPixmap, QFont
 
 class EClassesTabWidget(QTabWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super(EClassesTabWidget, self).__init__()
         self.addTab(EClassesWidget(), "Classes")
         self.addTab(QWidget(), "Subclasses")
 
 
 class EClassesWidget(QWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super(EClassesWidget, self).__init__()
 
         self.classWindow = None
@@ -65,12 +66,12 @@ class EClassesWidget(QWidget):
         lay.addWidget(self.classScroll)
         self.setLayout(lay)
 
-    def openClassCreator(self, checked):
+    def openClassCreator(self) -> None:
         if self.classWindow == None: self.classWindow = EClassCreatorWindow()
         self.classWindow.show()
         
 
-    def _startClassList(self):
+    def _startClassList(self) -> None:
         class_files = os.listdir("data/classes")
         for f in class_files:
             role = EClassWidget._JSONToClass(f"data/classes/{f}")
@@ -177,7 +178,7 @@ Features: {self.features}
         return new_name.lower() + ".json"
 
     @staticmethod
-    def _JSONToClass(class_file: str):
+    def _JSONToClass(class_file: str) -> Self:
         with open(class_file, "r") as json_f:
             data = json.load(json_f)
             return EClassWidget(data)
