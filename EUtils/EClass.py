@@ -2,7 +2,10 @@ import json
 import os
 import requests
 from typing import Self
-from .EWidgets import EHSeperator, ECollapsibleBox, EVSeperator
+from .EWidgets import (
+  EHSeperator, ECollapsibleBox, EVSeperator,
+  EWrapLabel
+)
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, 
     QTabWidget, QHBoxLayout, QFrame, 
@@ -150,7 +153,7 @@ class EClassWidget(QWidget):
         super(EClassWidget, self).__init__()
         lay = QVBoxLayout(self)
         line1 = QHBoxLayout()
-        line2 = QVBoxLayout()
+        line2 = QHBoxLayout()
         line3 = QHBoxLayout()
         line4 = QHBoxLayout()
 
@@ -166,19 +169,23 @@ class EClassWidget(QWidget):
         options = self.information["proficiency_choices"][0]["from"]["options"] if "proficiency_choices" in keys else None
         self.proficiency_choices_from_indexes = [option["item"]["index"] for option in options] if options else None
         self.proficiency_choices_from_names = [option["item"]["name"] for option in options] if options else None
+        self.proficiencies = [profs["index"] for profs in self.information["proficiencies"]] if self.information["proficiencies"] else None
 
-        line1.addWidget(QLabel(f"Name: {self.name}"))
-        line1.addWidget(QLabel(f"Index: {self.index}"))
-        line2.addWidget(QLabel(f"Hit Die: d{self.hit_die}"))
-        line2.addWidget(QLabel(f"Saving Throws: {self.saving_throws_names}"))
-        line3.addWidget(QLabel(f"{self.proficiency_choices}"))
-        line3.addWidget(QLabel(f"{self.proficiency_choices_from_names}"))
+        line1.addWidget(EWrapLabel(f"Name: {self.name}"))
+        line1.addWidget(EWrapLabel(f"Index: {self.index}"))
+        line2.addWidget(EWrapLabel(f"Hit Die: d{self.hit_die}"))
+        line2.addWidget(EWrapLabel(f"Saving Throws: {self.saving_throws_names}"))
+        line3.addWidget(EWrapLabel(f"Proficiency Choices: {self.proficiency_choices}"))
+        line3.addWidget(EWrapLabel(f"Proficiency Options: {self.proficiency_choices_from_names}"))
+        line4.addWidget(EWrapLabel(f"Proficiencies: {self.proficiencies}"))
 
         lay.addLayout(line1)
         lay.addWidget(EHSeperator())
         lay.addLayout(line2)
         lay.addWidget(EHSeperator())
         lay.addLayout(line3)
+        lay.addWidget(EHSeperator())
+        lay.addLayout(line4)
 
 
 class EClassCreatorWindow(QMainWindow):
@@ -231,7 +238,7 @@ class EClassCreatorWindow(QMainWindow):
         widget.setLayout(lay)
         self.setCentralWidget(widget)
 
-    def togglePreview(self):
+    def togglePreview(self) -> None:
         vis = self.preview.isVisible()
         self.preview.setVisible(not vis)
         self.previewButton.setIcon(self.previewFalse) if vis is True else self.previewButton.setIcon(self.previewTrue)
