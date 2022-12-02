@@ -1,7 +1,16 @@
 from PySide6 import QtCore
 from PySide6.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation
 from PySide6.QtGui import QPalette, QColor, QPixmap
-from PySide6.QtWidgets import QWidget, QFrame, QToolButton, QScrollArea, QSizePolicy, QVBoxLayout, QPushButton
+from PySide6.QtWidgets import (
+    QWidget, QFrame, QToolButton,
+    QScrollArea, QSizePolicy, QVBoxLayout,
+    QPushButton, QLabel
+)
+
+class EWrapLabel(QLabel):
+    def __init__(self, text: str) -> None:
+        super(EWrapLabel, self).__init__(text)
+        self.setWordWrap(True)
 
 class EHSeperator(QFrame):
     def __init__(self) -> None:
