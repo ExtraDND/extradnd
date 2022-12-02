@@ -8,8 +8,7 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import ( 
     QApplication, QMainWindow, QWidget,
-    QTabWidget, QToolBar, QStatusBar,
-    QLabel, QVBoxLayout, QBoxLayout
+    QTabWidget, QSizePolicy
 )
 
 logging.basicConfig(filename="logging.log",format='%(asctime)s - %(levelname)s:%(message)s', level=logging.DEBUG, datefmt='%m/%d/%Y %I:%M:%S %p')

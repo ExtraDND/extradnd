@@ -1,5 +1,6 @@
 import json
 import os
+import requests
 from typing import Self
 from .EWidgets import EHSeperator, ECollapsibleBox, EVSeperator
 from PySide6.QtWidgets import (
@@ -10,6 +11,73 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QSize, QKeyCombination
 from PySide6.QtGui import QPixmap, QFont
+
+API_URI = "https://www.dnd5eapi.co/graphql/"
+def run_query(uri, query, statusCode, headers=None):
+    request = requests.post(uri, json={'query': query})
+    if request.status_code == statusCode:
+        return request.json()
+    else:
+        raise Exception(f"Unexpected status code returned: {request.status_code}")
+getClasses = '''
+query Query {
+  classes {
+    name
+    index
+    hit_die
+    saving_throws {
+      index
+      full_name
+    }
+    multi_classing {
+      prerequisites {
+        ability_score {
+          index
+        }
+        minimum_score
+      }
+      prerequisite_options {
+        type
+        from {
+          option_set_type
+          options {
+            option_type
+            minimum_score
+            ability_score {
+              index
+            }
+          }
+        }
+      }
+    }
+    proficiencies {
+      index
+      type
+    }
+    proficiency_choices {
+      choose
+      desc
+      from {
+        options {
+          ... on ProficiencyChoiceOption {
+            option_type
+            choice {
+              choose
+            }
+          }
+          ... on ProficiencyReferenceOption {
+            option_type
+            item {
+              name
+              index
+            }
+          }
+        }
+      }
+    }
+  }
+}
+'''
 
 class EClassesTabWidget(QTabWidget):
     def __init__(self) -> None:
@@ -70,12 +138,11 @@ class EClassesWidget(QWidget):
         if self.classWindow == None: self.classWindow = EClassCreatorWindow()
         self.classWindow.show()
         
-
     def _startClassList(self) -> None:
-        class_files = os.listdir("data/classes")
-        for f in class_files:
-            role = EClassWidget._JSONToClass(f"data/classes/{f}")
-            self.classScrollLayout.addWidget(ECollapsibleBox(role.name, role, False))
+        dnd_classes = run_query(API_URI,getClasses,200)["data"]["classes"]
+        for dnd_class in dnd_classes:
+            widget = EClassWidget(dnd_class)
+            self.classScrollLayout.addWidget(ECollapsibleBox(widget.name, widget, False))
 
 
 class EClassWidget(QWidget):
@@ -86,112 +153,32 @@ class EClassWidget(QWidget):
         line2 = QVBoxLayout()
         line3 = QHBoxLayout()
         line4 = QHBoxLayout()
-        line5 = QHBoxLayout()
-        self.name = information["name"]
-        self.source = information["source"]
+
+        self.information = information
+        keys = self.information.keys()
+        self.name = self.information["name"] if "name" in keys else ""
+        self.index = self.information["index"] if "index" in keys else None
+        self.hit_die = self.information["hit_die"] if "hit_die" in keys else None
+        throws = self.information["saving_throws"] if "saving_throws" in keys else None
+        self.saving_throws_indexes = [throw["index"] for throw in throws] if throws else None
+        self.saving_throws_names = [throw["full_name"] for throw in throws] if throws else None
+        self.proficiency_choices = self.information["proficiency_choices"][0]["choose"] if "proficiency_choices" in keys else None
+        options = self.information["proficiency_choices"][0]["from"]["options"] if "proficiency_choices" in keys else None
+        self.proficiency_choices_from_indexes = [option["item"]["index"] for option in options] if options else None
+        self.proficiency_choices_from_names = [option["item"]["name"] for option in options] if options else None
+
         line1.addWidget(QLabel(f"Name: {self.name}"))
-        line1.addWidget(QLabel(f"Source: {self.source}"))
-        self.description = information["description"]
-        desc = QLabel(self.description)
-        desc.setWordWrap(True)
-        line2.addWidget(QLabel("Description:"))
-        line2.addWidget(desc)
-        self.hit_die = information["hit_die"]
-        self.saving_throws = information["saving_throws"]
-        line3.addWidget(QLabel(f"Hit Die: d{self.hit_die}"))
-        line3.addWidget(QLabel(f"Saving Throws: {self.__getSavingThrowStr(self.saving_throws)}"))
-        self.subclass = information["subclass"]
-        self.subclass_level = information["subclass_level"]
-        line4.addWidget(QLabel(f"Subclass: {self.__convertName(self.subclass)}"))
-        line4.addWidget(QLabel(f"Subclass Level: {self.subclass_level}"))
-        self.spellcasting = information["spellcasting"]
-        self.skill_proficiency = information["skill_proficiency"]
-        self.skill_proficiency_choices = information["skill_proficiency_choices"]
-        line5.addWidget(QLabel(f"{self.skill_proficiency}"))
-        line5.addWidget(QLabel(f"{self.skill_proficiency_choices}"))
-        self.skill_expertise = information["skill_expertise"]
-        self.skill_expertise_choices = information["skill_expertise_choices"]
-        self.modifiers = information["modifiers"]
-        self.starting_equipment = information["starting_equipment"]
-        self.features = information["features"]
+        line1.addWidget(QLabel(f"Index: {self.index}"))
+        line2.addWidget(QLabel(f"Hit Die: d{self.hit_die}"))
+        line2.addWidget(QLabel(f"Saving Throws: {self.saving_throws_names}"))
+        line3.addWidget(QLabel(f"{self.proficiency_choices}"))
+        line3.addWidget(QLabel(f"{self.proficiency_choices_from_names}"))
 
         lay.addLayout(line1)
         lay.addWidget(EHSeperator())
         lay.addLayout(line2)
         lay.addWidget(EHSeperator())
         lay.addLayout(line3)
-        lay.addWidget(EHSeperator())
-        lay.addLayout(line4)
-        lay.addWidget(EHSeperator())
-        lay.addLayout(line5)
-    
-    def _getClassInfo(self) -> str:
-        info = f"""
-Name: {self.name} | Source: {self.source}
-===================================================
-Hit Die: d{self.hit_die} | Spellcaster: {self.spellcasting}
-Saving Throws: {self.saving_throws}
-===================================================
-Proficiency Choices: {self.skill_proficiency}
-Proficiency Options: {self.skill_proficiency_choices}
-===================================================
-Expertise Choices: {self.skill_expertise}
-Expertice Options: {self.skill_expertise_choices}
-===================================================
-Subclass: {self.subclass}
-Subclass Level: {self.subclass_level}
-===================================================
-Modifiers: {self.modifiers}
-Starting Equipment: {self.starting_equipment}
-Features: {self.features}
-"""
-        return info
-
-    @staticmethod
-    def __convertName(name: str) -> str:
-        result = ""
-        nameSpl = name.split("_")
-        for word in nameSpl:
-            result += f"{word.capitalize()} "
-        return result
-
-    @staticmethod
-    def __getSavingThrowStr(svTrs: list[str]) -> str:
-        result = ""
-        if "str" in svTrs: result += "Strength, "
-        if "dex" in svTrs: result += "Dexterity, "
-        if "con" in svTrs: result += "Constitution, "
-        if "int" in svTrs: result += "Intelligence, "
-        if "wis" in svTrs: result += "Wisdom, "
-        if "cha" in svTrs: result += "Charisma, "
-        result = result[:-2]
-        return result
-
-    @staticmethod
-    def __getJSONfileName(name: str) -> str:
-        new_name = ""
-        for character in name:
-            if character != " ":
-                new_name += character
-            else:
-                new_name += "_"
-        return new_name.lower() + ".json"
-
-    @staticmethod
-    def _JSONToClass(class_file: str) -> Self:
-        with open(class_file, "r") as json_f:
-            data = json.load(json_f)
-            return EClassWidget(data)
-
-    @staticmethod
-    def _ClassToJSON(data: dict) -> str:
-        with open("data/classes/"+EClassWidget.__getJSONfileName(data["name"]), "w+") as json_f:
-            json_data = json.dumps(data)
-            json_f.write(json.dumps(data))
-            return json_data
-
-    def __str__(self) -> str:
-        return self._getClassInfo()
 
 
 class EClassCreatorWindow(QMainWindow):
