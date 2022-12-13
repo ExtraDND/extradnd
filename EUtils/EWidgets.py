@@ -1,4 +1,3 @@
-from PySide6 import QtCore
 from PySide6.QtCore import Qt, QParallelAnimationGroup, QPropertyAnimation, QAbstractAnimation
 from PySide6.QtGui import QPalette, QColor, QPixmap
 from PySide6.QtWidgets import (
